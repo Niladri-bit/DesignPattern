@@ -6,6 +6,8 @@ import cart.ShoppingCartService;
 import entities.Customer;
 import entities.Product;
 import enumerations.ProductCategory;
+import observer.EmailNotificationObserver;
+import observer.MessageNotification;
 import strategy.Buy1Get1DiscountStrategy;
 import strategy.PercentageDiscountStrategy;
 
@@ -26,7 +28,8 @@ public class Client {
 
         // 🔹 Create cart
         Cart cart = cartService.createCart(customer);
-
+        cart.addObserver(new EmailNotificationObserver());
+        cart.addObserver(new MessageNotification());
         // 🔹 Add items
         cart.addCartItem(laptop, 1);
         cart.addCartItem(mouse, 4);

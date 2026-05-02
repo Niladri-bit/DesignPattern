@@ -2,22 +2,27 @@ package cart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Observer;
 
 import entities.CartItem;
 import entities.Customer;
 import entities.Product;
 import enumerations.CartState;
+import observer.CartObservable;
+import observer.CartObserver;
 import state.ActiveState;
 import state.ShoppingCartState;
 import strategy.DiscountStrategy;
 
-public class Cart {
+public class Cart implements CartObservable{
 	private Customer customer;
 	private ShoppingCartState cartState;
 	private CartState cartStateEnum;
 	private Map<Integer,CartItem> cartItems;
 	private DiscountStrategy discountStrategy;
+	List<CartObserver> observers;
 	
 	public Cart(Customer customer) {
 		super();
@@ -26,8 +31,13 @@ public class Cart {
 		this.cartStateEnum = CartState.ACTIVE;
 		this.discountStrategy = null;
 		this.cartItems = new HashMap<>();
+		this.observers = new ArrayList<>();
 	}
 	
+	public Customer getCustomer() {
+		return customer;
+	}
+
 	public void setDiscountStrategy(DiscountStrategy discountStrategy) {
 		this.discountStrategy=discountStrategy;
 	}
@@ -63,6 +73,7 @@ public class Cart {
 	
 	public void pay() {
 		cartState.pay(this);
+		notifyObservers();
 	}
 	
 	public void cancel() {
@@ -108,8 +119,28 @@ public class Cart {
 
 	    bill.append("TOTAL: ").append(grandTotal).append("\n");
 	    bill.append("FINAL AMOUNT: ").append(finalTotal);
-
+	    
 	    return bill.toString();
+	}
+
+	@Override
+	public void addObserver(CartObserver obs) {
+		observers.add(obs);
+		
+	}
+
+	@Override
+	public void removeObserver(CartObserver obs) {
+		// TODO Auto-generated method stub
+		observers.remove(obs);
+	}
+
+	@Override
+	public void notifyObservers() {
+		for(CartObserver obs: observers) {
+			obs.update(this);
+		}
+		
 	}
 	
 	
