@@ -1,0 +1,6 @@
+package enumerations;
+
+public enum ChatType {
+	ONE_TO_ONE,
+	GROUP;
+}

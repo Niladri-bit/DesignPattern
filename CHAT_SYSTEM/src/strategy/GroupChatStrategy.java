@@ -1,0 +1,23 @@
+package strategy;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import models.User;
+import service.Chat;
+
+public class GroupChatStrategy implements ChatStrategy {
+
+    @Override
+    public List<User> getRecipients(Chat chat, User sender) {
+        List<User> recipients = new ArrayList<>();
+
+        for (User user : chat.getUsers()) {
+            if (!user.equals(sender)) {
+                recipients.add(user);
+            }
+        }
+
+        return recipients;
+    }
+}
