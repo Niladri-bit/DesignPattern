@@ -5,22 +5,47 @@ import java.time.Instant;
 import entities.Booking;
 import entities.Car;
 import entities.User;
+import observer.Observer;
 import strategy.PricingStrategy;
 import strategy.WeekdayPricingStrategy;
 import strategy.WeekendPricingStrategy;
 
 public class CarRentalSystem {
 
-    private final CarService carService;
-    private final BookingService bookingService;
+	   private static volatile CarRentalSystem instance;
 
-    // Constructor injection (good design)
-    public CarRentalSystem(CarService carService,
-                           BookingService bookingService) {
-        this.carService = carService;
-        this.bookingService = bookingService;
-    }
+	    private final CarService carService;
+	    private final BookingService bookingService;
 
+	    private CarRentalSystem() {
+	        this.carService = new CarService();
+	        this.bookingService = new BookingService();
+	        
+	        
+	    }
+
+	    public static CarRentalSystem getInstance() {
+	        if (instance == null) {
+	            synchronized (CarRentalSystem.class) {
+	                if (instance == null) {
+	                    instance = new CarRentalSystem();
+	                }
+	            }
+	        }
+	        return instance;
+	    }
+	    
+	    
+	    // ----------------------------
+	    // OBSERVER APIs (NEW)
+	    // ----------------------------
+	    public void registerObserver(Observer observer) {
+	        bookingService.register(observer);
+	    }
+
+	    public void removeObserver(Observer observer) {
+	        bookingService.remove(observer);
+	    }
     // -------------------------------
     // 1. Add Car (Admin use case)
     // -------------------------------
